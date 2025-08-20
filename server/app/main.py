@@ -4,6 +4,7 @@ from typing import Annotated, AsyncIterator
 from psycopg import AsyncConnection
 import logging
 from . import database
+from uuid import UUID
 
 logging.basicConfig(
     format="%(levelname)s: %(name)s - %(message)s",
@@ -34,8 +35,12 @@ async def index():
 
 
 @app.get("/tasks")
-async def get_tasks(request: Request):
-    offset = int(request.query_params.get("offset", "0"))
-    limit = int(request.query_params.get("limit", "100"))
+async def get_tasks(offset: int = 0, limit: int = 100):
     return await database.get_tasks(offset=offset, limit=limit)
+
+
+@app.get("/tasks/{task_id}")
+async def get_task(task_id: UUID):
+    log.debug(f"get task by id: {task_id}")
+    return await database.get_task_by_id(task_id)
 

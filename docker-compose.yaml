@@ -24,11 +24,20 @@ services:
       - postgres
     build:
       context: ./server
+    develop:
+      watch:
+        # Sync the /app directory
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - ./backend/.venv
+
+        # Rebuild when pyproject.toml changes
+        - action: rebuild
+          path: ./backend/pyproject.toml
     ports:
       - "9001:9001"
-    volumes:
-      - "./server:/app"
-      - "/app/.venv"
     environment:
       - PORT=9001
       - POSTGRES_HOST=postgres

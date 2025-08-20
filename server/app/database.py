@@ -57,3 +57,19 @@ async def get_tasks(offset: int = 0, limit: int = 100) -> List[Task]:
             }
             await cursor.execute(query=query, params=params)
             return await cursor.fetchall()
+
+
+async def get_task_by_id(task_id: UUID) -> Task | None:
+    """Get a single task by task_id."""
+    pool = get_async_connection_pool()
+    await pool.open()
+    async with pool.connection() as conn:
+        async with conn.cursor(row_factory=class_row(Task)) as cursor:
+            query = """
+                SELECT t.*
+                FROM public.tasks t
+                WHERE task_id=%(task_id)s
+            """
+            params = {"task_id": task_id}
+            await cursor.execute(query=query, params=params)
+            return await cursor.fetchone()
