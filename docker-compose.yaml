@@ -4,29 +4,20 @@ services:
     image: postgres:16
     container_name: postgres
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-    #   interval: 10s
-    #   retries: 3
-    #   start_period: 10s
-    #   timeout: 10s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-
-  # server:
-  #   build:
-  #     context: ./server
-  #   restart: always
-
-
 
 volumes:
   postgres_data:
