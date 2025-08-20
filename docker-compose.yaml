@@ -13,11 +13,25 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "postgres_data:/var/lib/postgresql/data"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+
+  server:
+    depends_on:
+      - postgres
+    build:
+      context: ./server
+    ports:
+      - "9001:9001"
+    volumes:
+      - "./server:/app"
+      - "/app/.venv"
+    environment:
+      - PORT=9001
+      - POSTGRES_HOST=postgres
 
 volumes:
   postgres_data:
